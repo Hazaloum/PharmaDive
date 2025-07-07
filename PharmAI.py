@@ -46,10 +46,19 @@ mohap_df = load_mohap_data()
 st.title("💊 UAE Molecule Intelligence Platform")
 
 # Shared molecule selector
-selected_combo = st.selectbox(
-    "🔎 Search Molecule:",
-    sorted(df["Molecule Combination"].dropna().unique())
-)
+# --- Search-friendly molecule selector ---
+search_term = st.text_input("🔍 Type to search molecule:", "")
+
+# Get unique molecules
+all_combinations = sorted(df["Molecule Combination"].dropna().unique())
+
+# Reorder so exact matches show first, then partials
+exact_matches = [x for x in all_combinations if x.strip().upper() == search_term.strip().upper()]
+partial_matches = [x for x in all_combinations if search_term.strip().upper() in x.upper() and x not in exact_matches]
+ordered_combinations = exact_matches + partial_matches if search_term else all_combinations
+
+# Final dropdown
+selected_combo = st.selectbox("📋 Select Molecule Combination:", ordered_combinations)
 
 # Tabs
 tab1a, tab1b, tab2, tab3, tab4, tab5, tab6 = st.tabs([
