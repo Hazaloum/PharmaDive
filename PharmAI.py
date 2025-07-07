@@ -45,22 +45,10 @@ mohap_df = load_mohap_data()
 # --- UI ---
 st.title("💊 UAE Molecule Intelligence Platform")
 
-# --- Searchable selectbox with smart default focus ---
-search_term = st.text_input("🔍 Search molecule:", "").strip().upper()
-combo_list = sorted(df["Molecule Combination"].dropna().unique())
-
-# Try to find the first match
-default_index = 0
-for i, combo in enumerate(combo_list):
-    if search_term in combo.upper():
-        default_index = i
-        break
-
-# Show dropdown starting at best match
+# ✅ One simple searchable dropdown
 selected_combo = st.selectbox(
-    "📋 Select Molecule Combination:",
-    combo_list,
-    index=default_index
+    "🔎 Search and Select Molecule Combination:",
+    sorted(df["Molecule Combination"].dropna().unique())
 )
 # Tabs
 tab1a, tab1b, tab2, tab3, tab4, tab5, tab6 = st.tabs([
