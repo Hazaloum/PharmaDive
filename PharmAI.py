@@ -14,20 +14,31 @@ from tool_functions.Erosion import plot_market_erosion
 from tool_functions.OrangeBook import display_patent_summary
 from tool_functions.Reg import get_regulatory_summary
 
+# --- Cleaning function ---
+import re
+def clean_combo(x):
+    if pd.isna(x):
+        return ""
+    return re.sub(r"\s+", " ", str(x).strip().upper())
+
 # --- Load Master Data ---
 @st.cache_data
 def load_master_data():
     df = pd.read_csv("Master Data.csv")
     df = create_combination_column(df)
     df.columns = df.columns.str.replace("\n", " ", regex=False).str.strip()
+
     for c in df.columns:
         if "Value" in c or "Units" in c:
             df[c] = pd.to_numeric(
                 df[c].astype(str).str.replace(",", "").str.strip(),
                 errors="coerce"
             )
-    return df
 
+    # 👉 Clean Molecule Combination column here
+    df["Molecule Combination"] = df["Molecule Combination"].apply(clean_combo)
+    
+    return df
 # --- Load MOHAP Data ---
 @st.cache_data
 def load_mohap_data():
