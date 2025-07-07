@@ -45,21 +45,23 @@ mohap_df = load_mohap_data()
 # --- UI ---
 st.title("💊 UAE Molecule Intelligence Platform")
 
-# Shared molecule selector
-# --- Search-friendly molecule selector ---
-search_term = st.text_input("🔍 Type to search molecule:", "")
+# --- Searchable selectbox with smart default focus ---
+search_term = st.text_input("🔍 Search molecule:", "").strip().upper()
+combo_list = sorted(df["Molecule Combination"].dropna().unique())
 
-# Get unique molecules
-all_combinations = sorted(df["Molecule Combination"].dropna().unique())
+# Try to find the first match
+default_index = 0
+for i, combo in enumerate(combo_list):
+    if search_term in combo.upper():
+        default_index = i
+        break
 
-# Reorder so exact matches show first, then partials
-exact_matches = [x for x in all_combinations if x.strip().upper() == search_term.strip().upper()]
-partial_matches = [x for x in all_combinations if search_term.strip().upper() in x.upper() and x not in exact_matches]
-ordered_combinations = exact_matches + partial_matches if search_term else all_combinations
-
-# Final dropdown
-selected_combo = st.selectbox("📋 Select Molecule Combination:", ordered_combinations)
-
+# Show dropdown starting at best match
+selected_combo = st.selectbox(
+    "📋 Select Molecule Combination:",
+    combo_list,
+    index=default_index
+)
 # Tabs
 tab1a, tab1b, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📊 Exec Summary",
